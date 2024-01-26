@@ -88,7 +88,9 @@ exports.createPost = [
 
 exports.getAllPosts = asyncHandler(async (req, res, next) => {
   try {
-    const posts = await Post.find()
+    const userAndFollowings = [req.user._id, ...req.user.following];
+
+    const posts = await Post.find({ userId: { $in: userAndFollowings } })
       .populate({
         path: 'comments',
         populate: { path: 'userId', select: 'username profilePicture' },
