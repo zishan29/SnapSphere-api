@@ -4,14 +4,8 @@ const { Schema } = mongoose;
 
 const PostSchema = new Schema(
   {
-    content: {
-      type: {
-        type: String,
-        enum: ['text', 'image'],
-        required: true,
-      },
-      data: String,
-    },
+    text: { type: String },
+    imageUrl: { type: String },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],

@@ -38,6 +38,7 @@ router.post(
 router.post(
   '/posts',
   passport.authenticate('jwt', { session: false }),
+  upload.single('image'),
   postController.createPost,
 );
 

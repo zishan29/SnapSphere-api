@@ -5,7 +5,7 @@ const cloudinary = require('cloudinary').v2;
 const Post = require('../models/post');
 
 exports.createPost = [
-  body('content').custom(async (content) => {
+  body('text').custom(async (content) => {
     if (content === String) {
       if (!content) {
         throw new Error('Post is empty');
@@ -50,22 +50,24 @@ exports.createPost = [
 
       let newPost;
 
-      if (imageUrl === 'undefined') {
+      if (!imageUrl) {
         newPost = new Post({
-          content: {
-            type: 'text',
-            data: req.body.data,
-          },
+          text: req.body.text,
+          userId: req.user._id,
+          comments: [],
+          likes: [],
+        });
+      } else if (req.body.text) {
+        newPost = new Post({
+          text: req.body.text,
+          imageUrl,
           userId: req.user._id,
           comments: [],
           likes: [],
         });
       } else {
         newPost = new Post({
-          content: {
-            type: 'image',
-            data: imageUrl,
-          },
+          imageUrl,
           userId: req.user._id,
           comments: [],
           likes: [],
