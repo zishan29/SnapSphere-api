@@ -30,7 +30,14 @@ exports.createComment = [
         postId: req.body.postId,
       });
       try {
-        await newComment.save();
+        const savedComment = await newComment.save();
+
+        await Post.findByIdAndUpdate(
+          req.body.postId,
+          { $push: { comments: savedComment._id } },
+          { new: true },
+        );
+
         res.status(200).json({ message: 'Comment created successfully' });
       } catch (err) {
         res.status(400).json({ err });
