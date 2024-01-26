@@ -88,7 +88,7 @@ exports.createPost = [
 
 exports.getAllPosts = asyncHandler(async (req, res, next) => {
   try {
-    const userAndFollowings = [req.user._id, ...req.user.following];
+    const userAndFollowings = [req.user._id, ...(req.user.following || [])];
 
     const posts = await Post.find({ userId: { $in: userAndFollowings } })
       .populate({
@@ -98,6 +98,7 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
       .populate('userId');
     res.status(200).json({ posts });
   } catch (err) {
+    console.error('Error in getAllPosts:', err);
     res.status(400).json({ err });
   }
 });
