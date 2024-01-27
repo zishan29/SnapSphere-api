@@ -54,6 +54,12 @@ router.delete(
   postController.deletePost,
 );
 
+router.put(
+  '/posts/:id/likes',
+  passport.authenticate('jwt', { session: false }),
+  postController.updateLikes,
+);
+
 router.post(
   '/comments',
   passport.authenticate('jwt', { session: false }),
@@ -64,6 +70,12 @@ router.get(
   '/:postId/comments',
   passport.authenticate('jwt', { session: false }),
   commentController.getComments,
+);
+
+router.put(
+  '/comments/:id/likes',
+  passport.authenticate('jwt', { session: false }),
+  commentController.updateCommentLikes,
 );
 
 router.delete(

@@ -119,3 +119,35 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
     res.status(403).json({ err });
   }
 });
+
+exports.updateLikes = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await Post.findById(id);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check if the user has already liked the post
+    const hasLiked = post.likes.includes(req.user._id);
+
+    if (hasLiked) {
+      // User already liked, unlike the post
+      post.likes = post.likes.filter(
+        (userId) => userId.toString() !== req.user._id.toString(),
+      );
+    } else {
+      // User hasn't liked, like the post
+      post.likes.push(req.user._id);
+    }
+
+    await post.save();
+
+    res.status(200).json({ likes: post.likes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};

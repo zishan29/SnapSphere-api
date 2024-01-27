@@ -69,3 +69,35 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
     res.status(400).json({ err });
   }
 });
+
+exports.updateCommentLikes = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const comment = await Comment.findById(id);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Check if the user has already liked the comment
+    const hasLiked = comment.likes.includes(req.user._id);
+
+    if (hasLiked) {
+      // User already liked, unlike the comment
+      comment.likes = comment.likes.filter(
+        (userId) => userId.toString() !== req.user._id.toString(),
+      );
+    } else {
+      // User hasn't liked, like the comment
+      comment.likes.push(req.user._id);
+    }
+
+    await comment.save();
+
+    res.status(200).json({ likes: comment.likes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
