@@ -169,12 +169,16 @@ exports.editUser = asyncHandler(async (req, res, next) => {
     newData = {
       username: req.body.username ? req.body.username : req.user.username,
       email: req.body.email ? req.body.email : req.user.email,
+      followers: req.body.follower ? req.body.followers : req.user.followers,
+      following: req.body.following ? req.body.following : req.user.following,
       _id: req.user._id,
     };
   } else {
     newData = {
       username: req.body.username ? req.body.username : req.user.username,
       email: req.body.email ? req.body.email : req.user.email,
+      followers: req.body.follower ? req.body.followers : req.user.followers,
+      following: req.body.following ? req.body.following : req.user.following,
       profilePicture: imageUrl,
       _id: req.user._id,
     };
