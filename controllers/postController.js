@@ -103,6 +103,23 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.getSinglePost = asyncHandler(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const posts = await Post.findById(id)
+      .populate({
+        path: 'comments',
+        populate: { path: 'userId', select: 'username profilePicture' },
+      })
+      .populate('userId');
+    res.status(200).json({ posts });
+  } catch (err) {
+    console.error('Error in getAllPosts:', err);
+    res.status(400).json({ err });
+  }
+});
+
 exports.deletePost = asyncHandler(async (req, res, next) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);

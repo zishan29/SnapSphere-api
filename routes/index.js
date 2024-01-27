@@ -48,6 +48,12 @@ router.get(
   postController.getAllPosts,
 );
 
+router.get(
+  '/post/:id',
+  passport.authenticate('jwt', { session: false }),
+  postController.getSinglePost,
+);
+
 router.delete(
   '/posts/:id',
   passport.authenticate('jwt', { session: false }),
