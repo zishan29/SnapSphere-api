@@ -28,7 +28,7 @@ router.get(
   userController.getUser,
 );
 
-router.post(
+router.put(
   '/user',
   passport.authenticate('jwt', { session: false }),
   upload.single('image'),
@@ -67,7 +67,7 @@ router.put(
 );
 
 router.post(
-  '/:id/comments',
+  '/:postId/comments',
   passport.authenticate('jwt', { session: false }),
   commentController.createComment,
 );
