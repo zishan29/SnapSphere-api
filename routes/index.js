@@ -67,7 +67,7 @@ router.put(
 );
 
 router.post(
-  '/comments',
+  '/:id/comments',
   passport.authenticate('jwt', { session: false }),
   commentController.createComment,
 );

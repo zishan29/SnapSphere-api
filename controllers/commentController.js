@@ -27,13 +27,13 @@ exports.createComment = [
         userId: req.user._id,
         comment: req.body.comment,
         likes: [],
-        postId: req.body.postId,
+        postId: req.params.id,
       });
       try {
         const savedComment = await newComment.save();
 
         await Post.findByIdAndUpdate(
-          req.body.postId,
+          req.params.id,
           { $push: { comments: savedComment._id } },
           { new: true },
         );
