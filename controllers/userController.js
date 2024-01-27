@@ -169,28 +169,47 @@ exports.editUser = asyncHandler(async (req, res, next) => {
     newData = {
       username: req.body.username ? req.body.username : req.user.username,
       email: req.body.email ? req.body.email : req.user.email,
-      followers: req.body.follower ? req.body.followers : req.user.followers,
-      following: req.body.following ? req.body.following : req.user.following,
       _id: req.user._id,
     };
   } else {
     newData = {
       username: req.body.username ? req.body.username : req.user.username,
       email: req.body.email ? req.body.email : req.user.email,
-      followers: req.body.follower ? req.body.followers : req.user.followers,
-      following: req.body.following ? req.body.following : req.user.following,
       profilePicture: imageUrl,
       _id: req.user._id,
     };
   }
 
   try {
+    // Update user information
     const updatedUser = await User.findByIdAndUpdate(req.user._id, newData, {
       new: true,
     });
 
     if (!updatedUser) {
       return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update follower list if following is provided in the request body
+    if (req.body.following) {
+      const userToUnfollow = await User.findById(req.user._id);
+      const followingId = req.body.following;
+
+      // Remove the user from the followers list
+      userToUnfollow.followers = userToUnfollow.followers.filter(
+        (id) => id.toString() !== followingId.toString(),
+      );
+
+      await userToUnfollow.save();
+
+      // Add the user to the followers list of the following user
+      const followingUser = await User.findByIdAndUpdate(followingId, {
+        $addToSet: { followers: req.user._id },
+      });
+
+      if (!followingUser) {
+        return res.status(404).json({ error: 'Following user not found' });
+      }
     }
 
     res.status(200).json({ user: updatedUser });
