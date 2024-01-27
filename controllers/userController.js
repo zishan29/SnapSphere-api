@@ -181,7 +181,6 @@ exports.editUser = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    // Update user information
     const updatedUser = await User.findByIdAndUpdate(req.user._id, newData, {
       new: true,
     });
@@ -190,29 +189,61 @@ exports.editUser = asyncHandler(async (req, res, next) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Update follower list if following is provided in the request body
-    if (req.body.following) {
-      const userToUnfollow = await User.findById(req.user._id);
-      const followingId = req.body.following;
+    res.status(200).json({ user: updatedUser });
+  } catch (err) {
+    res.status(400).json({ err });
+  }
+});
 
-      // Remove the user from the followers list
-      userToUnfollow.followers = userToUnfollow.followers.filter(
-        (id) => id.toString() !== followingId.toString(),
-      );
+exports.addUserFollowing = asyncHandler(async (req, res, next) => {
+  try {
+    const currentUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $addToSet: { following: req.body.following } },
+      { new: true },
+    );
 
-      await userToUnfollow.save();
-
-      // Add the user to the followers list of the following user
-      const followingUser = await User.findByIdAndUpdate(followingId, {
-        $addToSet: { followers: req.user._id },
-      });
-
-      if (!followingUser) {
-        return res.status(404).json({ error: 'Following user not found' });
-      }
+    if (!currentUser) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    res.status(200).json({ user: updatedUser });
+    const followedUser = await User.findByIdAndUpdate(
+      req.body.following,
+      { $addToSet: { followers: req.user._id } },
+      { new: true },
+    );
+
+    if (!followedUser) {
+      return res.status(404).json({ error: 'User to follow not found' });
+    }
+    res.status(200).json({ user: currentUser });
+  } catch (err) {
+    res.status(400).json({ err });
+  }
+});
+
+exports.removeUserFollowing = asyncHandler(async (req, res, next) => {
+  try {
+    const currentUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $pull: { following: req.body.unfollowing } },
+      { new: true },
+    );
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const unfollowedUser = await User.findByIdAndUpdate(
+      req.body.unfollowing,
+      { $pull: { followers: req.user._id } },
+      { new: true },
+    );
+
+    if (!unfollowedUser) {
+      return res.status(404).json({ error: 'User to unfollow not found' });
+    }
+    res.status(200).json({ user: currentUser });
   } catch (err) {
     res.status(400).json({ err });
   }

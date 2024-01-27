@@ -35,6 +35,18 @@ router.put(
   userController.editUser,
 );
 
+router.put(
+  '/user/addFollowing',
+  passport.authenticate('jwt', { session: false }),
+  userController.addUserFollowing,
+);
+
+router.put(
+  '/user/removeFollowing',
+  passport.authenticate('jwt', { session: false }),
+  userController.removeUserFollowing,
+);
+
 router.post(
   '/posts',
   passport.authenticate('jwt', { session: false }),
