@@ -103,6 +103,20 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.getAllPostsByAUser = asyncHandler(async (req, res, next) => {
+  try {
+    const posts = await Post.find({ userId: req.params.userId })
+      .populate({
+        path: 'comments',
+        populate: { path: 'userId', select: 'username profilePicture' },
+      })
+      .populate('userId');
+    res.status(200).json({ posts });
+  } catch (err) {
+    res.status(400).json({ err });
+  }
+});
+
 exports.getSinglePost = asyncHandler(async (req, res, next) => {
   try {
     const { id } = req.params;

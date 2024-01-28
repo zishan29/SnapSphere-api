@@ -61,6 +61,12 @@ router.get(
 );
 
 router.get(
+  '/posts/:userId',
+  passport.authenticate('jwt', { session: false }),
+  postController.getAllPostsByAUser,
+);
+
+router.get(
   '/post/:id',
   passport.authenticate('jwt', { session: false }),
   postController.getSinglePost,
