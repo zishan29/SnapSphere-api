@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const { v4: uuidv4 } = require('uuid');
 const cloudinary = require('cloudinary').v2;
 const Post = require('../models/post');
+const User = require('../models/user');
 
 exports.createPost = [
   body('text').custom(async (content) => {
@@ -88,8 +89,11 @@ exports.createPost = [
 
 exports.getAllPosts = asyncHandler(async (req, res, next) => {
   try {
-    const userAndFollowings = [req.user._id, ...(req.user.following || [])];
-
+    const user = await User.findOne({ _id: req.user._id })
+      .populate('followers', '_id')
+      .populate('following', '_id');
+    const userAndFollowings = [req.user._id, ...(user.following || [])];
+    console.log(userAndFollowings);
     const posts = await Post.find({ userId: { $in: userAndFollowings } })
       .populate({
         path: 'comments',
