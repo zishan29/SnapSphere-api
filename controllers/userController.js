@@ -56,9 +56,7 @@ exports.signup = [
       });
       try {
         await user.save();
-        const token = jwt.sign({ user }, process.env.SECRET_KEY, {
-          expiresIn: '1d',
-        });
+        const token = jwt.sign({ user }, process.env.SECRET_KEY);
         res
           .status(200)
           .json({ message: 'User created successfully', user, token });
@@ -85,9 +83,7 @@ exports.login = asyncHandler(async (req, res, next) => {
           _id: user._id,
           username: user.username,
         };
-        const token = jwt.sign({ user: userData }, process.env.SECRET_KEY, {
-          expiresIn: '1d',
-        });
+        const token = jwt.sign({ user: userData }, process.env.SECRET_KEY);
 
         res.status(200).json({ userData, token });
       });
@@ -110,26 +106,26 @@ exports.getAllUsers = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.verifyToken = asyncHandler(async (req, res, next) => {
-  const { token } = req.body;
-  console.log(token);
-  if (!token) {
-    res.status(401).json({ error: 'Unauthorized' });
-  }
+// exports.verifyToken = asyncHandler(async (req, res, next) => {
+//   const { token } = req.body;
+//   console.log(token);
+//   if (!token) {
+//     res.status(401).json({ error: 'Unauthorized' });
+//   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    req.user = decoded;
+//   try {
+//     const decoded = jwt.verify(token, process.env.SECRET_KEY);
+//     req.user = decoded;
 
-    res.status(200).json({ message: 'Token is valid' });
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      res.status(401).json({ error: 'Token expired' });
-    } else {
-      res.status(401).json({ error: 'Unauthorized' });
-    }
-  }
-});
+//     res.status(200).json({ message: 'Token is valid' });
+//   } catch (error) {
+//     if (error.name === 'TokenExpiredError') {
+//       res.status(401).json({ error: 'Token expired' });
+//     } else {
+//       res.status(401).json({ error: 'Unauthorized' });
+//     }
+//   }
+// });
 
 exports.getUser = asyncHandler(async (req, res, next) => {
   try {
