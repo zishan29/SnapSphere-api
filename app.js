@@ -25,7 +25,7 @@ db.on('error', console.error.bind(console, 'mongo connection error'));
 app.use(express.json());
 app.use(
   cors({
-    origin: 'https://snapshpere.vercel.app',
+    origin: ['https://snapshpere.vercel.app', 'http://localhost:3000'],
     credentials: true,
   }),
 );
