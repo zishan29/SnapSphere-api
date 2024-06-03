@@ -48,7 +48,9 @@ exports.createComment = [
 
 exports.getComments = asyncHandler(async (req, res, next) => {
   try {
-    const comments = await Comment.findById({ postId: req.params.postId });
+    const comments = await Comment.findById({
+      postId: req.params.postId,
+    }).populate('userId');
     res.status(200).json({ comments });
   } catch (err) {
     res.status(400).json({ err });
