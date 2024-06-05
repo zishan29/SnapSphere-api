@@ -76,12 +76,18 @@ exports.createPost = [
       }
 
       try {
-        await newPost.save();
-        res.status(200).json({ message: 'New post created successfully' });
+        const savedPost = await newPost.save();
+        await savedPost.populate('userId');
+        res
+          .status(200)
+          .json({ message: 'New post created successfully', post: savedPost });
       } catch (err) {
         res
           .status(400)
-          .json({ 'An error occurred while creating a new post': err });
+          .json({
+            error: 'An error occurred while creating a new post',
+            details: err,
+          });
       }
     }
   }),
