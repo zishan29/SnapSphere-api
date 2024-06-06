@@ -82,12 +82,10 @@ exports.createPost = [
           .status(200)
           .json({ message: 'New post created successfully', post: savedPost });
       } catch (err) {
-        res
-          .status(400)
-          .json({
-            error: 'An error occurred while creating a new post',
-            details: err,
-          });
+        res.status(400).json({
+          error: 'An error occurred while creating a new post',
+          details: err,
+        });
       }
     }
   }),
@@ -99,13 +97,13 @@ exports.getAllPosts = asyncHandler(async (req, res, next) => {
       .populate('followers', '_id')
       .populate('following', '_id');
     const userAndFollowings = [req.user._id, ...(user.following || [])];
-    console.log(userAndFollowings);
     const posts = await Post.find({ userId: { $in: userAndFollowings } })
       .populate({
         path: 'comments',
         populate: { path: 'userId', select: 'username profilePicture' },
       })
       .populate('userId');
+    console.log(posts);
     res.status(200).json({ posts });
   } catch (err) {
     console.error('Error in getAllPosts:', err);
