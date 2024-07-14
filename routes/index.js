@@ -108,4 +108,10 @@ router.delete(
   commentController.deleteComment,
 );
 
+router.get(
+  '/comments',
+  passport.authenticate('jwt', { session: false }),
+  commentController.getAllComments,
+);
+
 module.exports = router;
